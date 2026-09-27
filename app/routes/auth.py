@@ -8,6 +8,32 @@ auth_bp = Blueprint("auth", __name__)
 
 @auth_bp.post("/register")
 def register():
+    """
+    Cria um novo usuário
+    ---
+    tags:
+      - Autenticação
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            username:
+              type: string
+              example: joao
+            senha:
+              type: string
+              example: "123456"
+    responses:
+      201:
+        description: Usuário criado com sucesso
+      400:
+        description: Dados obrigatórios faltando
+      409:
+        description: Usuário já existe
+    """
     dados = request.get_json() or {}
     username = dados.get("username")
     senha = dados.get("senha")
@@ -28,6 +54,30 @@ def register():
 
 @auth_bp.post("/login")
 def login():
+    """
+    Autentica um usuário e retorna um token JWT
+    ---
+    tags:
+      - Autenticação
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            username:
+              type: string
+              example: joao
+            senha:
+              type: string
+              example: "123456"
+    responses:
+      200:
+        description: Login realizado com sucesso, retorna o access_token
+      401:
+        description: Credenciais inválidas
+    """
     dados = request.get_json() or {}
     username = dados.get("username")
     senha = dados.get("senha")

@@ -8,6 +8,21 @@ movimentacoes_bp = Blueprint("movimentacoes", __name__)
 
 @movimentacoes_bp.get("")
 def listar_movimentacoes():
+    """
+    Lista o histórico de movimentações de estoque
+    ---
+    tags:
+      - Movimentações
+    parameters:
+      - in: query
+        name: produto_id
+        type: integer
+        required: false
+        description: Filtra movimentações de um produto específico
+    responses:
+      200:
+        description: Lista de movimentações
+    """
     produto_id = request.args.get("produto_id", type=int)
     query = Movimentacao.query
     if produto_id:
@@ -19,6 +34,43 @@ def listar_movimentacoes():
 @movimentacoes_bp.post("")
 @jwt_required()
 def registrar_movimentacao():
+    """
+    Registra uma entrada ou saída de estoque
+    ---
+    tags:
+      - Movimentações
+    security:
+      - Bearer: []
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            produto_id:
+              type: integer
+              example: 1
+            tipo:
+              type: string
+              enum: [entrada, saida]
+              example: entrada
+            quantidade:
+              type: integer
+              example: 5
+            observacao:
+              type: string
+              example: Reposição de estoque
+    responses:
+      201:
+        description: Movimentação registrada, retorna a movimentação e o produto atualizado
+      400:
+        description: Dados inválidos ou estoque insuficiente
+      401:
+        description: Token ausente ou inválido
+      404:
+        description: Produto não encontrado
+    """
     dados = request.get_json() or {}
     produto_id = dados.get("produto_id")
     tipo = dados.get("tipo")
