@@ -23,4 +23,9 @@ def create_app(config_class=Config):
     def health_check():
         return {"status": "ok", "servico": "estoque-api"}
 
+    @app.get("/setup-db")
+    def setup_db():
+        db.create_all()
+        return {"mensagem": "Tabelas criadas com sucesso"}
+
     return app
